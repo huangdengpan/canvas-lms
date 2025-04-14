@@ -110,8 +110,13 @@ class GradingStandardsController < ApplicationController
     GradingStandard.default_grading_standard
   end
 
+  private
   def standard_as_json(standard)
-    standard.as_json(methods: JSON_METHODS, permissions: { user: @current_user })
+    json = standard.as_json(methods: JSON_METHODS, permissions: { user: @current_user })
+    if json['grading_standard']&.has_key?('assessed_assignment?')
+      json['grading_standard']['assessed_assignment'] = json['grading_standard'].delete('assessed_assignment?')
+    end
+    json
   end
 
   def grading_standard_params
